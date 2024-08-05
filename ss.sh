@@ -180,7 +180,6 @@ then
         # Убедитесь, что изменения применены
         ufw reload
         check_success
-        exit 0
     fi
 else
     ufw=false
