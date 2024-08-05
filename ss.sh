@@ -35,13 +35,13 @@ check_ping_and_update_hosts() {
     while IFS= read -r line; do
         if [[ $line =~ ^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+) ]]; then
             ip="${BASH_REMATCH[1]}"
-            min_avg=$(echo "$line" | awk -F'min/avg/max = ' '{print $2}' | awk '{print $1}')
-            if [ -n "$min_avg" ]; then
-                echo "Пинг для $ip: $min_avg ms"
-                if (( $(echo "$min_avg < $min_ping" | bc -l) )); then
-                    min_ping=$min_avg
+            if [[ $line =~ min/avg/max\ =\ ([0-9]+)\/([0-9]+)\/([0-9]+) ]]; then
+                avg_ping="${BASH_REMATCH[2]}"
+                if (( avg_ping < min_ping )); then
+                    min_ping=$avg_ping
                     best_ip=$ip
                 fi
+                echo "Пинг для $ip: $avg_ping ms"
             fi
         fi
     done <<< "$ping_output"
