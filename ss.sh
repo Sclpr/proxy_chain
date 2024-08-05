@@ -8,7 +8,6 @@ check_success() {
     fi
 }
 
-
 # Функция для проверки статуса службы
 check_service_status() {
     local service_name="shadowsocks-libev-server@config"
@@ -92,7 +91,7 @@ fi
 
 # Создание конфигурационного файла
 echo "Создание конфигурационного файла..."
-mkdir -п /var/snap/shadowsocks-libev/common/etc/shadowsocks-libev
+mkdir -p /var/snap/shadowsocks-libev/common/etc/shadowsocks-libev
 tee $CONFIG_FILE > /dev/null <<EOL
 {
     "server": ["::0", "0.0.0.0"],
