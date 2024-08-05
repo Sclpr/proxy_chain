@@ -56,27 +56,41 @@ check_ping_and_update_hosts() {
     fi
 }
 
-# Запрос порта и пароля у пользователя
-read -p "Введите порт для Shadowsocks (например, 8388): " SERVER_PORT
-read -sp "Введите пароль для Shadowsocks: " PASSWORD
+# Запрос порта у пользователя и установка значения по умолчанию, если ввод пустой
+read -p "Введите порт для Shadowsocks (по умолчанию 8388): " SERVER_PORT
+SERVER_PORT="${SERVER_PORT:-8388}"
+echo
+
+# Запрос пароля у пользователя и установка значения по умолчанию, если ввод пустой
+read -sp "Введите пароль для Shadowsocks(по умолчанию 123456): " PASSWORD
+PASSWORD="${PASSWORD:-123456}"
 echo
 
 # Параметры
 METHOD="aes-256-gcm"
 CONFIG_FILE="/var/snap/shadowsocks-libev/common/etc/shadowsocks-libev/config.json"
 
-# Установка snapd, если он не установлен
-echo "Установка snapd..."
+# Обновление списка пакетов
+echo "Обновление списка пакетов."
 apt update
 check_success
 
-apt install -y snapd
-check_success
+# Установка snapd, если он не установлен
+if ! command -v snap &> /dev/null; then
+    echo "Установка snapd..."
+    apt install -y snapd
+    check_success
+fi
 
-# Установка Shadowsocks через snap
-echo "Установка Shadowsocks через snap..."
-snap install shadowsocks-libev
-check_success
+
+# Проверка наличия Shadowsocks-Libev и его установка, если он отсутствует
+if ! snap list | grep -q shadowsocks-libev; then
+    echo "Установка Shadowsocks через snap..."
+    snap install shadowsocks-libev
+    check_success
+else
+    echo "Shadowsocks уже установлен."
+fi
 
 # Установка необходимых пакетов
 if ! command -v fping &> /dev/null; then
