@@ -48,7 +48,14 @@ check_ping_and_update_hosts() {
 
     if [ -n "$best_ip" ]; then
         echo -e "\033[0;32mВыбранный IP: $best_ip с минимальным пингом: $min_ping ms\033[0m"
+        # Удаление старых записей с fapi.binance.com из /etc/hosts
+        sudo sed -i '/fapi.binance.com/d' /etc/hosts
+        check_success
+        sudo sed -i '/api.binance.com/d' /etc/hosts
+        check_success
         echo "$best_ip fapi.binance.com" | sudo tee -a /etc/hosts > /dev/null
+        check_success
+        echo "$best_ip api.binance.com" | sudo tee -a /etc/hosts > /dev/null
         check_success
     else
         echo -e "\033[0;31mНе удалось определить лучший IP\033[0m"
