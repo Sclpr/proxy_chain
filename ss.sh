@@ -8,18 +8,6 @@ check_success() {
     fi
 }
 
-# Установка необходимых пакетов
-if ! command -v fping &> /dev/null; then
-    echo "Устанавливаем fping..."
-    sudo apt-get update
-    sudo apt-get install -y fping
-fi
-
-if ! command -v bc &> /dev/null; then
-    echo "Устанавливаем bc..."
-    sudo apt-get update
-    sudo apt-get install -y bc
-fi
 
 # Функция для проверки статуса службы
 check_service_status() {
@@ -90,6 +78,17 @@ check_success
 echo "Установка Shadowsocks через snap..."
 snap install shadowsocks-libev
 check_success
+
+# Установка необходимых пакетов
+if ! command -v fping &> /dev/null; then
+    echo "Устанавливаем fping..."
+    sudo apt-get install -y fping
+fi
+
+if ! command -v bc &> /dev/null; then
+    echo "Устанавливаем bc..."
+    sudo apt-get install -y bc
+fi
 
 # Создание конфигурационного файла
 echo "Создание конфигурационного файла..."
