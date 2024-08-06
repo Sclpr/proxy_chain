@@ -82,23 +82,6 @@ echo "Обновление списка пакетов."
 apt update
 check_success
 
-# Установка snapd, если он не установлен
-if ! command -v snap &> /dev/null; then
-    echo "Установка snapd..."
-    apt install -y snapd
-    check_success
-fi
-
-
-# Проверка наличия Shadowsocks-Libev и его установка, если он отсутствует
-if ! snap list | grep -q shadowsocks-libev; then
-    echo "Установка Shadowsocks через snap..."
-    snap install shadowsocks-libev
-    check_success
-else
-    echo "Shadowsocks уже установлен."
-fi
-
 # Установка необходимых пакетов
 if ! command -v fping &> /dev/null; then
     echo "Устанавливаем fping..."
@@ -108,6 +91,22 @@ fi
 if ! command -v bc &> /dev/null; then
     echo "Устанавливаем bc..."
     sudo apt-get install -y bc
+fi
+
+# Установка snapd, если он не установлен
+if ! command -v snap &> /dev/null; then
+    echo "Установка snapd..."
+    apt install -y snapd
+    check_success
+fi
+
+# Проверка наличия Shadowsocks-Libev и его установка, если он отсутствует
+if ! snap list | grep -q shadowsocks-libev; then
+    echo "Установка Shadowsocks через snap..."
+    snap install shadowsocks-libev
+    check_success
+else
+    echo "Shadowsocks уже установлен."
 fi
 
 # Создание конфигурационного файла
