@@ -203,7 +203,7 @@ fi
 
 echo "Shadowsocks успешно установлен и запущен."
 echo "Конфигурация:"
-echo "Server IP: $(curl -s ifconfig.me)"
+echo "Server IP: $(wget -qO- ifconfig.me)"
 echo "Server Port: $SERVER_PORT"
 echo "Password: $PASSWORD"
 echo "Encryption Method: $METHOD"
