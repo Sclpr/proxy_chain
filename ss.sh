@@ -24,8 +24,10 @@ check_service_status() {
 # Функция для проверки пинга и обновления /etc/hosts
 check_ping_and_update_hosts() {
     local ips="13.225.164.218 13.227.61.59 143.204.127.42 13.35.51.41 99.84.58.138 18.65.193.131 18.65.176.132 99.84.140.147 13.225.173.96 54.240.188.143 13.35.55.41 18.65.207.131 18.65.212.131"
-    local min_ping=999999
+    local min_avg_ping=999999
     local best_ip=""
+    local min_ping=999999
+    local max_ping=999999
 
     echo "Проверка пинга для IP-адресов..."
     ping_output=$(fping -a -A -c 3 $ips 2>&1)
@@ -36,18 +38,23 @@ check_ping_and_update_hosts() {
         if [[ $line =~ ^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+) ]]; then
             ip="${BASH_REMATCH[1]}"
             if [[ $line =~ min/avg/max\ =\ ([0-9]+)\/([0-9]+)\/([0-9]+) ]]; then
+                current_min_ping="${BASH_REMATCH[1]}"
                 avg_ping="${BASH_REMATCH[2]}"
-                if (( avg_ping < min_ping )); then
-                    min_ping=$avg_ping
+                current_max_ping="${BASH_REMATCH[3]}"
+                echo "Пинг для $ip: min=$current_min_ping ms, avg=$avg_ping ms, max=$current_max_ping ms"
+                
+                if (( avg_ping < min_avg_ping )) || { (( avg_ping == min_avg_ping )) && (( current_min_ping < min_ping )); } || { (( avg_ping == min_avg_ping )) && (( current_min_ping == min_ping )) && (( current_max_ping < max_ping )); }; then
+                    min_avg_ping=$avg_ping
+                    min_ping=$current_min_ping
+                    max_ping=$current_max_ping
                     best_ip=$ip
                 fi
-                echo "Пинг для $ip: $avg_ping ms"
             fi
         fi
     done <<< "$ping_output"
 
     if [ -n "$best_ip" ]; then
-        echo -e "\033[0;32mВыбранный IP: $best_ip с минимальным пингом: $min_ping ms\033[0m"
+        echo -e "\033[0;32mВыбранный IP: $best_ip с минимальным пингом: avg=$min_avg_ping ms, min=$min_ping ms, max=$max_ping ms\033[0m"
         # Удаление старых записей с fapi.binance.com из /etc/hosts
         sudo sed -i '/fapi.binance.com/d' /etc/hosts
         check_success
