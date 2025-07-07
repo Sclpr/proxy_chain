@@ -126,7 +126,7 @@ fi
 
 echo "Установка прокси завершена"
 echo "Конфигурация:"
-echo "Server IP: $(wget -qO- ifconfig.me)"
+echo "Server IP: $(wget -qO- ifconfig.me/ip)"
 echo "Server Port: $PORT_IN"
 echo "Password: $PASSWORD"
 echo "Encryption Method: AEAD_AES_256_GCM"
